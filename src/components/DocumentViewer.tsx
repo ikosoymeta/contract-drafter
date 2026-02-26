@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
+import { saveToDrive } from '../utils/googleDocs';
 
 interface Props {
   html: string;
@@ -10,6 +11,7 @@ interface Props {
 
 export function DocumentViewer({ html, filename, blob, onClose }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [showBanner, setShowBanner] = useState(false);
 
   // Close on Escape key
   useEffect(() => {
@@ -49,8 +51,11 @@ export function DocumentViewer({ html, filename, blob, onClose }: Props) {
     win.print();
   }
 
-  function handleOpenDriveFolder() {
-    window.open('https://drive.google.com/drive/u/0/folders/0AFszIqpbNJEXUk9PVA', '_blank');
+  function handleSaveToDrive() {
+    saveToDrive(blob, filename);
+    setShowBanner(true);
+    // Auto-hide banner after 12 seconds
+    setTimeout(() => setShowBanner(false), 12000);
   }
 
   return (
@@ -78,10 +83,14 @@ export function DocumentViewer({ html, filename, blob, onClose }: Props) {
           🖨 Print
         </button>
         <button
-          onClick={handleOpenDriveFolder}
+          onClick={handleSaveToDrive}
           className="btn-primary text-sm py-1.5 px-3"
+          style={{ background: '#1a73e8', display: 'flex', alignItems: 'center', gap: 6 }}
         >
-          ☁ Open Drive Folder
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.28 3L1 12.5 6.28 22h11.44L23 12.5 17.72 3H6.28zm5.72 15.5L5.5 9h13L12 18.5z"/>
+          </svg>
+          Save to Drive
         </button>
         <button
           onClick={onClose}
@@ -91,6 +100,36 @@ export function DocumentViewer({ html, filename, blob, onClose }: Props) {
           ×
         </button>
       </div>
+
+      {/* Instruction banner — shown after Save to Drive is clicked */}
+      {showBanner && (
+        <div
+          style={{
+            background: '#e8f0fe',
+            borderBottom: '1px solid #c5d8fb',
+            padding: '10px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            fontSize: 13,
+            color: '#1a56db',
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          <span>
+            <strong>Your file has been downloaded</strong> and your Drive folder has opened in a new tab.
+            Drag <strong>{filename}</strong> from your Downloads into the folder tab to save it.
+          </span>
+          <button
+            onClick={() => setShowBanner(false)}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#1a56db', fontSize: 18, lineHeight: 1 }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Document area */}
       <div className="flex-1 overflow-y-auto" style={{ background: '#f0f4f8' }}>
