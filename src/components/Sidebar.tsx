@@ -8,6 +8,8 @@ interface Props {
 }
 
 export function Sidebar({ activeSection, onSectionClick, isSectionComplete }: Props) {
+  const activeIdx = sections.findIndex((s) => s.id === activeSection);
+
   return (
     <aside className="w-72 bg-white border-r border-gray-200 min-h-screen flex flex-col">
       <div className="px-6 py-6 border-b border-gray-200">
@@ -15,16 +17,28 @@ export function Sidebar({ activeSection, onSectionClick, isSectionComplete }: Pr
         <p className="text-xs text-gray-500 mt-1">Professional Services Contracts</p>
       </div>
       <nav className="flex-1 py-4">
-        {sections.map((section, idx) => (
-          <SidebarItem
-            key={section.id}
-            section={section}
-            index={idx}
-            isActive={activeSection === section.id}
-            isComplete={isSectionComplete(section.id)}
-            onClick={() => onSectionClick(section.id)}
-          />
-        ))}
+        {sections.map((section, idx) => {
+          const isComplete = isSectionComplete(section.id);
+          const isActive = activeSection === section.id;
+
+          // A step is clickable if:
+          // - it's already complete, OR
+          // - it's the currently active step, OR
+          // - it's a previous step (idx < activeIdx)
+          const isClickable = isComplete || isActive || idx < activeIdx;
+
+          return (
+            <SidebarItem
+              key={section.id}
+              section={section}
+              index={idx}
+              isActive={isActive}
+              isComplete={isComplete}
+              isClickable={isClickable}
+              onClick={() => isClickable && onSectionClick(section.id)}
+            />
+          );
+        })}
       </nav>
       <div className="px-6 py-4 border-t border-gray-200 text-xs text-gray-400">
         Data saved locally in your browser
@@ -38,19 +52,27 @@ function SidebarItem({
   index,
   isActive,
   isComplete,
+  isClickable,
   onClick,
 }: {
   section: SectionConfig;
   index: number;
   isActive: boolean;
   isComplete: boolean;
+  isClickable: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
+      disabled={!isClickable}
+      title={!isClickable ? 'Complete the current step to unlock this section' : undefined}
       className={`w-full text-left px-6 py-3 flex items-start gap-3 transition-colors ${
-        isActive ? 'bg-blue-50 border-r-2 border-blue-600' : 'hover:bg-gray-50'
+        isActive
+          ? 'bg-blue-50 border-r-2 border-blue-600'
+          : isClickable
+            ? 'hover:bg-gray-50 cursor-pointer'
+            : 'cursor-not-allowed opacity-40'
       }`}
     >
       <span

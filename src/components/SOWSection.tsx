@@ -48,6 +48,16 @@ export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
     }));
   };
 
+  // Require: at least one deliverable with a name, and acceptance criteria filled
+  const hasValidDeliverable =
+    data.deliverables.length > 0 && data.deliverables.every((d) => d.name.trim() !== '');
+  const isComplete = hasValidDeliverable && data.acceptanceCriteria.trim() !== '';
+
+  const missingItems: string[] = [];
+  if (data.deliverables.length === 0) missingItems.push('at least one deliverable');
+  else if (!hasValidDeliverable) missingItems.push('a name for each deliverable');
+  if (!data.acceptanceCriteria.trim()) missingItems.push('acceptance criteria');
+
   return (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-1">Statement of Work</h2>
@@ -56,7 +66,9 @@ export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
       {/* Deliverables */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-800">Deliverables</h3>
+          <h3 className="text-sm font-semibold text-gray-800">
+            Deliverables <span className="text-red-500">*</span>
+          </h3>
           <button onClick={addDeliverable} className="btn-secondary text-xs py-1.5 px-3">
             + Add Deliverable
           </button>
@@ -84,8 +96,8 @@ export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
                     type="text"
                     value={d.name}
                     onChange={(e) => updateDeliverable(d.id, 'name', e.target.value)}
-                    placeholder="Deliverable name"
-                    className="input text-sm"
+                    placeholder="Deliverable name *"
+                    className={`input text-sm ${d.name.trim() === '' ? 'border-red-300 focus:border-red-400' : ''}`}
                   />
                   <input
                     type="date"
@@ -169,21 +181,35 @@ export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
 
       {/* Acceptance Criteria */}
       <div className="mb-8">
-        <h3 className="text-sm font-semibold text-gray-800 mb-3">Acceptance Criteria</h3>
+        <h3 className="text-sm font-semibold text-gray-800 mb-3">
+          Acceptance Criteria <span className="text-red-500">*</span>
+        </h3>
         <textarea
           value={data.acceptanceCriteria}
           onChange={(e) => onChange({ acceptanceCriteria: e.target.value })}
           placeholder="Define the criteria for accepting deliverables (e.g., testing requirements, sign-off process, quality standards)..."
           rows={5}
-          className="input resize-none"
+          className={`input resize-none ${data.acceptanceCriteria.trim() === '' ? '' : ''}`}
         />
       </div>
 
-      <div className="mt-8 flex justify-between">
+      {/* Validation hint */}
+      {!isComplete && missingItems.length > 0 && (
+        <p className="text-xs text-amber-600 mb-4">
+          Required to continue: {missingItems.join(', ')}.
+        </p>
+      )}
+
+      <div className="mt-2 flex justify-between">
         <button onClick={onPrev} className="btn-secondary">
           Back
         </button>
-        <button onClick={onNext} className="btn-primary">
+        <button
+          onClick={onNext}
+          disabled={!isComplete}
+          title={!isComplete ? 'Please fill in all required fields to continue' : undefined}
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Next: Contract Options
         </button>
       </div>

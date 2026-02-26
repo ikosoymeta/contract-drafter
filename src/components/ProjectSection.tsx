@@ -8,6 +8,13 @@ interface Props {
 }
 
 export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
+  const isComplete =
+    data.projectName.trim() !== '' &&
+    data.projectDescription.trim() !== '' &&
+    data.startDate !== '' &&
+    data.endDate !== '' &&
+    data.totalValue > 0;
+
   return (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-1">Project Details</h2>
@@ -74,7 +81,12 @@ export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
         <button onClick={onPrev} className="btn-secondary">
           Back
         </button>
-        <button onClick={onNext} className="btn-primary">
+        <button
+          onClick={onNext}
+          disabled={!isComplete}
+          title={!isComplete ? 'Please fill in all required fields to continue' : undefined}
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Next: Statement of Work
         </button>
       </div>

@@ -7,6 +7,12 @@ interface Props {
 }
 
 export function VendorSection({ data, onChange, onNext }: Props) {
+  const isComplete =
+    data.vendorLegalName.trim() !== '' &&
+    data.vendorAddress.trim() !== '' &&
+    data.vendorContactName.trim() !== '' &&
+    data.vendorEmail.trim() !== '';
+
   return (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-1">Vendor Information</h2>
@@ -57,7 +63,12 @@ export function VendorSection({ data, onChange, onNext }: Props) {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <button onClick={onNext} className="btn-primary">
+        <button
+          onClick={onNext}
+          disabled={!isComplete}
+          title={!isComplete ? 'Please fill in all required fields to continue' : undefined}
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Next: Project Details
         </button>
       </div>
