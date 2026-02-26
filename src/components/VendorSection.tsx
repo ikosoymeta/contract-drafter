@@ -15,11 +15,14 @@ export function VendorSection({ data, onChange, onNext }: Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">Vendor Information</h2>
-      <p className="text-sm text-gray-500 mb-6">Enter the vendor's legal details and primary contact.</p>
+      <StepHeader
+        step={1}
+        title="Vendor Information"
+        subtitle="Enter the vendor's legal details and primary point of contact."
+      />
 
-      <div className="space-y-5">
-        <Field label="Vendor Legal Name" required>
+      <div className="space-y-5 mt-7">
+        <Field label="Vendor Legal Name" required hint="Use the full legal entity name as it appears in official documents">
           <input
             type="text"
             value={data.vendorLegalName}
@@ -29,11 +32,11 @@ export function VendorSection({ data, onChange, onNext }: Props) {
           />
         </Field>
 
-        <Field label="Address" required>
+        <Field label="Registered Address" required>
           <textarea
             value={data.vendorAddress}
             onChange={(e) => onChange({ vendorAddress: e.target.value })}
-            placeholder="Full mailing address"
+            placeholder="Full mailing address including city, state, and ZIP"
             rows={3}
             className="input resize-none"
           />
@@ -50,7 +53,7 @@ export function VendorSection({ data, onChange, onNext }: Props) {
             />
           </Field>
 
-          <Field label="Email" required>
+          <Field label="Contact Email" required>
             <input
               type="email"
               value={data.vendorEmail}
@@ -62,28 +65,73 @@ export function VendorSection({ data, onChange, onNext }: Props) {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <FormFooter>
         <button
           onClick={onNext}
           disabled={!isComplete}
-          title={!isComplete ? 'Please fill in all required fields to continue' : undefined}
-          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          title={!isComplete ? 'Fill in all required fields to continue' : undefined}
+          className="btn-primary"
         >
-          Next: Project Details
+          Continue to Project Details
+          <ArrowRight />
         </button>
+      </FormFooter>
+    </div>
+  );
+}
+
+/* ── Shared sub-components ─────────────────────────────────────── */
+
+export function StepHeader({ step, title, subtitle }: { step: number; title: string; subtitle: string }) {
+  return (
+    <div className="flex items-start gap-4">
+      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span className="text-sm font-bold text-indigo-600">{step}</span>
+      </div>
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight">{title}</h2>
+        <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
       </div>
     </div>
   );
 }
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+export function Field({
+  label,
+  required,
+  hint,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <label className="block">
-      <span className="text-sm font-medium text-gray-700">
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </span>
-      <div className="mt-1.5">{children}</div>
-    </label>
+        {required && <span className="text-red-400 ml-1">*</span>}
+      </label>
+      {hint && <p className="text-xs text-gray-400 mb-1.5">{hint}</p>}
+      {children}
+    </div>
+  );
+}
+
+export function FormFooter({ children, left }: { children: React.ReactNode; left?: React.ReactNode }) {
+  return (
+    <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+      <div>{left}</div>
+      <div className="flex items-center gap-3">{children}</div>
+    </div>
+  );
+}
+
+export function ArrowRight() {
+  return (
+    <svg className="w-4 h-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
   );
 }

@@ -1,4 +1,5 @@
 import type { ContractFormData } from '../types/contract';
+import { StepHeader, Field, FormFooter, ArrowRight } from './VendorSection';
 
 interface Props {
   data: ContractFormData;
@@ -17,10 +18,13 @@ export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">Project Details</h2>
-      <p className="text-sm text-gray-500 mb-6">Define the project scope, timeline, and total value.</p>
+      <StepHeader
+        step={2}
+        title="Project Details"
+        subtitle="Define the project scope, timeline, and total contract value."
+      />
 
-      <div className="space-y-5">
+      <div className="space-y-5 mt-7">
         <Field label="Project Name" required>
           <input
             type="text"
@@ -31,7 +35,7 @@ export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
           />
         </Field>
 
-        <Field label="Project Description" required>
+        <Field label="Project Description" required hint="Describe the scope, objectives, and expected outcomes">
           <textarea
             value={data.projectDescription}
             onChange={(e) => onChange({ projectDescription: e.target.value })}
@@ -63,7 +67,7 @@ export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
 
         <Field label="Total Contract Value (USD)" required>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
             <input
               type="number"
               value={data.totalValue || ''}
@@ -71,37 +75,29 @@ export function ProjectSection({ data, onChange, onNext, onPrev }: Props) {
               placeholder="0.00"
               min={0}
               step={0.01}
-              className="input pl-7"
+              className="input pl-8"
             />
           </div>
         </Field>
       </div>
 
-      <div className="mt-8 flex justify-between">
-        <button onClick={onPrev} className="btn-secondary">
-          Back
-        </button>
+      <FormFooter
+        left={
+          <button onClick={onPrev} className="btn-secondary">
+            Back
+          </button>
+        }
+      >
         <button
           onClick={onNext}
           disabled={!isComplete}
-          title={!isComplete ? 'Please fill in all required fields to continue' : undefined}
-          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          title={!isComplete ? 'Fill in all required fields to continue' : undefined}
+          className="btn-primary"
         >
-          Next: Statement of Work
+          Continue to Statement of Work
+          <ArrowRight />
         </button>
-      </div>
+      </FormFooter>
     </div>
-  );
-}
-
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="text-sm font-medium text-gray-700">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </span>
-      <div className="mt-1.5">{children}</div>
-    </label>
   );
 }

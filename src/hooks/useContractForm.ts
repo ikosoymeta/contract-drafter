@@ -4,6 +4,7 @@ import { defaultFormData, sections } from '../types/contract';
 
 const STORAGE_KEY = 'contract-drafter-form-data';
 const SECTION_KEY = 'contract-drafter-active-section';
+const VISITED_KEY = 'contract-drafter-visited-sections';
 
 function loadFromStorage(): ContractFormData {
   try {
@@ -30,9 +31,24 @@ function loadSectionFromStorage(): FormSection {
   return 'vendor';
 }
 
+function loadVisitedFromStorage(): Set<FormSection> {
+  try {
+    const raw = localStorage.getItem(VISITED_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw) as FormSection[];
+      return new Set(arr);
+    }
+  } catch {
+    // ignore
+  }
+  return new Set<FormSection>();
+}
+
 export function useContractForm() {
   const [formData, setFormDataState] = useState<ContractFormData>(loadFromStorage);
   const [activeSection, setActiveSectionState] = useState<FormSection>(loadSectionFromStorage);
+  // Track which steps the user has explicitly advanced *past* (by clicking Next)
+  const [completedSteps, setCompletedSteps] = useState<Set<FormSection>>(loadVisitedFromStorage);
 
   // Persist form data
   useEffect(() => {
@@ -43,6 +59,11 @@ export function useContractForm() {
   useEffect(() => {
     localStorage.setItem(SECTION_KEY, activeSection);
   }, [activeSection]);
+
+  // Persist completed steps
+  useEffect(() => {
+    localStorage.setItem(VISITED_KEY, JSON.stringify([...completedSteps]));
+  }, [completedSteps]);
 
   const setFormData = useCallback(
     (updater: Partial<ContractFormData> | ((prev: ContractFormData) => ContractFormData)) => {
@@ -59,6 +80,10 @@ export function useContractForm() {
     setActiveSectionState(section);
   }, []);
 
+  /**
+   * Returns true only when a step's required fields are filled AND
+   * (for field-less steps like "options") the user has explicitly advanced past it.
+   */
   const isSectionComplete = useCallback(
     (section: FormSection): boolean => {
       switch (section) {
@@ -78,19 +103,26 @@ export function useContractForm() {
             formData.totalValue > 0
           );
         case 'sow':
-          return formData.deliverables.length > 0 && formData.acceptanceCriteria.trim().length > 0;
+          return (
+            formData.deliverables.length > 0 &&
+            formData.deliverables.every((d) => d.name.trim() !== '') &&
+            formData.acceptanceCriteria.trim().length > 0
+          );
         case 'options':
-          return true; // Options always considered complete (defaults are fine)
+          // Only show checkmark after user has clicked "Next" from this step
+          return completedSteps.has('options');
         case 'review':
-          return false; // Review is never "complete" — it's the final step
+          return false; // Final step — never shown as "complete"
       }
     },
-    [formData],
+    [formData, completedSteps],
   );
 
   const goToNext = useCallback(() => {
     const idx = sections.findIndex((s) => s.id === activeSection);
     if (idx < sections.length - 1) {
+      // Mark current step as explicitly completed before advancing
+      setCompletedSteps((prev) => new Set([...prev, activeSection]));
       setActiveSectionState(sections[idx + 1].id);
     }
   }, [activeSection]);
@@ -105,8 +137,10 @@ export function useContractForm() {
   const resetForm = useCallback(() => {
     setFormDataState({ ...defaultFormData });
     setActiveSectionState('vendor');
+    setCompletedSteps(new Set());
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SECTION_KEY);
+    localStorage.removeItem(VISITED_KEY);
   }, []);
 
   return {

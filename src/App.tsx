@@ -38,14 +38,21 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen" style={{ background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #f0fdf4 100%)' }}>
       <Sidebar
         activeSection={activeSection}
         onSectionClick={setActiveSection}
         isSectionComplete={isSectionComplete}
       />
-      <main className="flex-1 p-8 max-w-3xl">
-        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">{renderSection()}</div>
+      <main className="flex-1 flex items-start justify-center p-8 pt-10">
+        <div className="w-full max-w-2xl">
+          <div
+            key={activeSection}
+            className="animate-fade-up bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/40 p-8"
+          >
+            {renderSection()}
+          </div>
+        </div>
       </main>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>

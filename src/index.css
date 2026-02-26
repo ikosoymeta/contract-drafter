@@ -1,52 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   body {
     @apply font-sans text-gray-900 antialiased;
     margin: 0;
+    background: #f8fafc;
   }
+  * { box-sizing: border-box; }
 }
 
 @layer components {
   .input {
-    @apply w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-800
+    @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800
            placeholder:text-gray-400
-           focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none
-           transition-colors;
+           focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 focus:outline-none
+           hover:border-gray-300
+           transition-all duration-150 shadow-sm;
   }
-
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5
-           text-sm font-medium text-white
-           hover:bg-blue-700 active:bg-blue-800
-           focus:outline-none focus:ring-2 focus:ring-blue-500/50
-           transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-xl
+           bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white
+           shadow-sm
+           hover:bg-indigo-700
+           active:bg-indigo-800
+           focus:outline-none focus:ring-4 focus:ring-indigo-200
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none;
   }
-
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-gray-300
-           bg-white px-5 py-2.5 text-sm font-medium text-gray-700
-           hover:bg-gray-50 active:bg-gray-100
-           focus:outline-none focus:ring-2 focus:ring-gray-300/50
-           transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-xl border border-gray-200
+           bg-white px-5 py-2.5 text-sm font-semibold text-gray-600
+           shadow-sm
+           hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800
+           active:bg-gray-100
+           focus:outline-none focus:ring-4 focus:ring-gray-100
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
   }
 }
 
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
+.animate-fade-up  { animation: fade-up  0.22s ease-out; }
+.animate-slide-in { animation: slide-in 0.2s  ease-out; }
 
-.animate-slide-in {
-  animation: slide-in 0.2s ease-out;
-}
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
