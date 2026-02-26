@@ -52,11 +52,21 @@ export function SOWSection({ data, onChange, onNext, onPrev, onReset }: Props) {
 
   const hasValidDeliverable =
     data.deliverables.length > 0 && data.deliverables.every((d) => d.name.trim() !== '');
-  const isComplete = hasValidDeliverable && data.acceptanceCriteria.trim() !== '';
+
+  const hasValidMilestone =
+    data.paymentMilestones.length > 0 &&
+    data.paymentMilestones.every(
+      (m) => m.name.trim() !== '' && m.amount > 0 && m.dueDate.trim() !== ''
+    );
+
+  const isComplete =
+    hasValidDeliverable && hasValidMilestone && data.acceptanceCriteria.trim() !== '';
 
   const missingItems: string[] = [];
   if (data.deliverables.length === 0) missingItems.push('at least one deliverable');
   else if (!hasValidDeliverable) missingItems.push('a name for each deliverable');
+  if (data.paymentMilestones.length === 0) missingItems.push('at least one payment milestone');
+  else if (!hasValidMilestone) missingItems.push('name, amount, and due date for each milestone');
   if (!data.acceptanceCriteria.trim()) missingItems.push('acceptance criteria');
 
   return (
@@ -138,6 +148,7 @@ export function SOWSection({ data, onChange, onNext, onPrev, onReset }: Props) {
       <div className="mt-6">
         <SectionBlock
           title="Payment Milestones"
+          required
           action={
             <button
               onClick={addMilestone}
@@ -176,8 +187,8 @@ export function SOWSection({ data, onChange, onNext, onPrev, onReset }: Props) {
                       type="text"
                       value={m.name}
                       onChange={(e) => updateMilestone(m.id, 'name', e.target.value)}
-                      placeholder="Milestone name"
-                      className="input text-sm"
+                      placeholder="Milestone name *"
+                      className={`input text-sm ${m.name.trim() === '' ? 'border-amber-200 focus:border-amber-400 focus:ring-amber-50' : ''}`}
                     />
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium">$</span>
@@ -185,17 +196,17 @@ export function SOWSection({ data, onChange, onNext, onPrev, onReset }: Props) {
                         type="number"
                         value={m.amount || ''}
                         onChange={(e) => updateMilestone(m.id, 'amount', Number(e.target.value))}
-                        placeholder="0.00"
+                        placeholder="0.00 *"
                         min={0}
                         step={0.01}
-                        className="input text-sm pl-7"
+                        className={`input text-sm pl-7 ${!m.amount || m.amount <= 0 ? 'border-amber-200 focus:border-amber-400 focus:ring-amber-50' : ''}`}
                       />
                     </div>
                     <input
                       type="date"
                       value={m.dueDate}
                       onChange={(e) => updateMilestone(m.id, 'dueDate', e.target.value)}
-                      className="input text-sm"
+                      className={`input text-sm ${m.dueDate.trim() === '' ? 'border-amber-200 focus:border-amber-400 focus:ring-amber-50' : ''}`}
                     />
                   </div>
                 </div>
