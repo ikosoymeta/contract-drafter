@@ -18,6 +18,7 @@ export default function App() {
     goToNext,
     goToPrev,
     resetForm,
+    resetSection,
   } = useContractForm();
 
   const { toasts, addToast, removeToast } = useToast();
@@ -25,13 +26,13 @@ export default function App() {
   function renderSection() {
     switch (activeSection) {
       case 'vendor':
-        return <VendorSection data={formData} onChange={setFormData} onNext={goToNext} />;
+        return <VendorSection data={formData} onChange={setFormData} onNext={goToNext} onReset={() => resetSection('vendor')} />;
       case 'project':
-        return <ProjectSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} />;
+        return <ProjectSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} onReset={() => resetSection('project')} />;
       case 'sow':
-        return <SOWSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} />;
+        return <SOWSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} onReset={() => resetSection('sow')} />;
       case 'options':
-        return <OptionsSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} />;
+        return <OptionsSection data={formData} onChange={setFormData} onNext={goToNext} onPrev={goToPrev} onReset={() => resetSection('options')} />;
       case 'review':
         return <ReviewSection data={formData} onPrev={goToPrev} onReset={resetForm} addToast={addToast} />;
     }

@@ -1,14 +1,15 @@
 import type { ContractFormData } from '../types/contract';
-import { StepHeader, Field, FormFooter, ArrowRight } from './VendorSection';
+import { StepHeader, Field, FormFooter, ArrowRight, ResetButton } from './VendorSection';
 
 interface Props {
   data: ContractFormData;
   onChange: (updates: Partial<ContractFormData>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onReset: () => void;
 }
 
-export function OptionsSection({ data, onChange, onNext, onPrev }: Props) {
+export function OptionsSection({ data, onChange, onNext, onPrev, onReset }: Props) {
   return (
     <div>
       <StepHeader
@@ -73,9 +74,10 @@ export function OptionsSection({ data, onChange, onNext, onPrev }: Props) {
 
       <FormFooter
         left={
-          <button onClick={onPrev} className="btn-secondary">
-            Back
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={onPrev} className="btn-secondary">Back</button>
+            <ResetButton onClick={onReset} />
+          </div>
         }
       >
         <button onClick={onNext} className="btn-primary">

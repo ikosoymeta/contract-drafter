@@ -243,16 +243,17 @@ export function ReviewSection({ data, onPrev, onReset, addToast }: Props) {
 
         <FormFooter
           left={
-            <button onClick={onPrev} className="btn-secondary">
-              Back
-            </button>
+            <button onClick={onPrev} className="btn-secondary">Back</button>
           }
         >
           <button
             onClick={onReset}
-            className="text-sm font-medium text-red-400 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 px-5 py-2.5 rounded-xl transition-colors shadow-sm"
           >
-            Reset Form
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Start New Request
           </button>
         </FormFooter>
       </div>

@@ -1,15 +1,16 @@
 import { v4 as uuid } from 'uuid';
 import type { ContractFormData, Deliverable, PaymentMilestone } from '../types/contract';
-import { StepHeader, Field, FormFooter, ArrowRight } from './VendorSection';
+import { StepHeader, Field, FormFooter, ArrowRight, ResetButton } from './VendorSection';
 
 interface Props {
   data: ContractFormData;
   onChange: (updates: Partial<ContractFormData> | ((prev: ContractFormData) => ContractFormData)) => void;
   onNext: () => void;
   onPrev: () => void;
+  onReset: () => void;
 }
 
-export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
+export function SOWSection({ data, onChange, onNext, onPrev, onReset }: Props) {
   const addDeliverable = () => {
     const d: Deliverable = { id: uuid(), name: '', description: '', dueDate: '' };
     onChange((prev) => ({ ...prev, deliverables: [...prev.deliverables, d] }));
@@ -231,9 +232,10 @@ export function SOWSection({ data, onChange, onNext, onPrev }: Props) {
 
       <FormFooter
         left={
-          <button onClick={onPrev} className="btn-secondary">
-            Back
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={onPrev} className="btn-secondary">Back</button>
+            <ResetButton onClick={onReset} />
+          </div>
         }
       >
         <button

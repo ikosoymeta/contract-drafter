@@ -4,9 +4,10 @@ interface Props {
   data: ContractFormData;
   onChange: (updates: Partial<ContractFormData>) => void;
   onNext: () => void;
+  onReset: () => void;
 }
 
-export function VendorSection({ data, onChange, onNext }: Props) {
+export function VendorSection({ data, onChange, onNext, onReset }: Props) {
   const isComplete =
     data.vendorLegalName.trim() !== '' &&
     data.vendorAddress.trim() !== '' &&
@@ -65,7 +66,11 @@ export function VendorSection({ data, onChange, onNext }: Props) {
         </div>
       </div>
 
-      <FormFooter>
+      <FormFooter
+        left={
+          <ResetButton onClick={onReset} />
+        }
+      >
         <button
           onClick={onNext}
           disabled={!isComplete}
@@ -125,6 +130,22 @@ export function FormFooter({ children, left }: { children: React.ReactNode; left
       <div>{left}</div>
       <div className="flex items-center gap-3">{children}</div>
     </div>
+  );
+}
+
+export function ResetButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="btn-secondary text-sm flex items-center gap-1.5 text-gray-500 hover:text-red-500 hover:border-red-200 transition-colors"
+      title="Reset this section's fields"
+    >
+      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Reset
+    </button>
   );
 }
 

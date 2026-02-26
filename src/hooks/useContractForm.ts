@@ -134,6 +134,60 @@ export function useContractForm() {
     }
   }, [activeSection]);
 
+  /**
+   * Resets only the fields belonging to a specific step.
+   */
+  const resetSection = useCallback(
+    (section: FormSection) => {
+      switch (section) {
+        case 'vendor':
+          setFormDataState((prev) => ({
+            ...prev,
+            vendorLegalName: '',
+            vendorAddress: '',
+            vendorContactName: '',
+            vendorEmail: '',
+          }));
+          break;
+        case 'project':
+          setFormDataState((prev) => ({
+            ...prev,
+            projectName: '',
+            projectDescription: '',
+            startDate: '',
+            endDate: '',
+            totalValue: 0,
+          }));
+          break;
+        case 'sow':
+          setFormDataState((prev) => ({
+            ...prev,
+            deliverables: [],
+            paymentMilestones: [],
+            acceptanceCriteria: '',
+          }));
+          break;
+        case 'options':
+          setFormDataState((prev) => ({
+            ...prev,
+            includePSA: true,
+            isAmendment: false,
+            amendmentNumber: '1',
+            originalContractDate: '',
+          }));
+          setCompletedSteps((prev) => {
+            const next = new Set(prev);
+            next.delete('options');
+            return next;
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [],
+  );
+
   const resetForm = useCallback(() => {
     setFormDataState({ ...defaultFormData });
     setActiveSectionState('vendor');
@@ -152,5 +206,6 @@ export function useContractForm() {
     goToNext,
     goToPrev,
     resetForm,
+    resetSection,
   };
 }
