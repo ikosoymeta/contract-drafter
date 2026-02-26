@@ -1,4 +1,5 @@
 import { Sidebar } from './components/Sidebar';
+import { ProgressBar } from './components/ProgressBar';
 import { ToastContainer } from './components/ToastContainer';
 import { VendorSection } from './components/VendorSection';
 import { ProjectSection } from './components/ProjectSection';
@@ -47,6 +48,7 @@ export default function App() {
       />
       <main className="flex-1 flex items-start justify-center p-8 pt-10">
         <div className="w-full max-w-2xl">
+          <ProgressBar activeSection={activeSection} isSectionComplete={isSectionComplete} />
           <div
             key={activeSection}
             className="animate-fade-up bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/40 p-8"
